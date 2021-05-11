@@ -49,6 +49,7 @@ function fetchData (page){
 	}));
 };
 
+
 $( ".next_page" ).on('click', function(e)  {
 	counter = counter + 1
 	fetchData(counter)
