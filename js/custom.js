@@ -1,5 +1,6 @@
 //preloading for page
-var counter = 1
+var counter = 0
+var kot
 
 $(window).on('load', function() { // makes sure the whole site is loaded
 	var status = $('#status');
@@ -14,15 +15,25 @@ $(window).on('load', function() { // makes sure the whole site is loaded
 			vidDefer[i].setAttribute('src',vidDefer[i].getAttribute('data-src'));
 		}
 	}
-	fetchData(1)
+	if(location.pathname.includes("index")){
+		fetchData(1);
+	}else{
+		fetchMovieData(sessionStorage.getItem('imdb_id'));
+	}
 })
 
-function fetchData (page){
-		fetch(`https://free-nba.p.rapidapi.com/players?per_page=35&page=${page}`, {
+function fetchData (page, query){
+	if(query){
+		url = `https://unogsng.p.rapidapi.com/search?limit=30&offset=${counter*30}&query=${query}`
+	}
+	else{
+		url = `https://unogsng.p.rapidapi.com/search?limit=30&offset=${counter*30}&orderby=rating`
+	}
+		fetch(url, {
 		"method": "GET",
 		"headers": {
 			"x-rapidapi-key": "d971f4b1e0msh33611128c6fa156p1b07a9jsn89553d5861e9",
-			"x-rapidapi-host": "free-nba.p.rapidapi.com"
+			"x-rapidapi-host": "unogsng.p.rapidapi.com"
 		}
 	})
 	.then(response =>
@@ -33,22 +44,55 @@ function fetchData (page){
 	).then(res => {
 		parent = document.getElementsByClassName('flex-wrap-movielist mv-grid-fw')[0]
 		parent.innerHTML = null
-		res.data.data.forEach(function (element) {
+		res.data.results.forEach(function (element) {
 			parent.innerHTML += `
 			<div class="movie-item-style-2 movie-item-style-1">
-				<img src="https://source.unsplash.com/random/200x200?sig=${element.id}" alt="">
+				<img src=${element.img} alt="">
 				<div class="hvr-inner">
-					<a  href="moviesingle.html"> Read more <i class="ion-android-arrow-dropright"></i> </a>
+					<a class="movie_single_item" imdb_id=${element.imdbid} href="moviesingle.html"> Read more <i class="ion-android-arrow-dropright"></i> </a>
 				</div>
 				<div class="mv-item-infor">
-					<h6><a href="#">${element.first_name}</a></h6>
-					<p class="rate"><i class="ion-android-star"></i><span>${element.id}</span> /10</p>
+					<h6><a href="#">${element.title}</a></h6>
+					<p class="rate"><i class="ion-android-star"></i><span>${element.imdbrating}</span> /10</p>
 				</div>
 			</div>`
 		});
+		var movies = document.getElementsByClassName('movie_single_item')
+		for(var i = 0;i<movies.length;i++){
+		    movies[i].addEventListener("click", function() {
+		        myScript(this);
+		    });
+		}
 	}));
 };
 
+function myScript(movie){
+		sessionStorage.setItem("imdb_id", movie.getAttribute("imdb_id"));
+}
+
+
+function fetchMovieData(imdbid){
+		fetch(`https://unogsng.p.rapidapi.com/title?imdbid=${imdbid}`, {
+		"method": "GET",
+		"headers": {
+			"x-rapidapi-key": "d971f4b1e0msh33611128c6fa156p1b07a9jsn89553d5861e9",
+			"x-rapidapi-host": "unogsng.p.rapidapi.com"
+		}
+	})
+	.then(response =>
+	    response.json().then(data => ({
+	        data: data,
+	        status: response.status
+	    })
+	).then(res => {
+		parent = document.getElementById('movie_subject')
+		parent.innerHTML = res.data.results[0].imdbplot
+		image = document.getElementById('details_image')
+		image.src=res.data.results[0].img
+		run_time = document.getElementById('run_time')
+		run_time.innerHTML = res.data.results[0].imdbruntime
+	}));
+};
 
 $( ".next_page" ).on('click', function(e)  {
 	counter = counter + 1
@@ -56,10 +100,17 @@ $( ".next_page" ).on('click', function(e)  {
 });
 
 $( ".back_page" ).on('click', function(e)  {
-	if(counter - 1 > 0){
+	if(counter - 1 > -1){
 		counter = counter - 1
 	}
 		fetchData(counter)
+});
+
+$( "#search_box" ).on('keyup', function(event)  {
+	if (event.keyCode === 13) {
+    event.preventDefault();
+    fetchData(1, event.target.value)
+  }
 });
 
 
