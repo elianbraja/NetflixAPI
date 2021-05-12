@@ -84,12 +84,17 @@ function fetchMovieData(imdbid){
 	        status: response.status
 	    })
 	).then(res => {
+		console.log(res)
 		parent = document.getElementById('movie_subject')
 		parent.innerHTML = res.data.results[0].imdbplot
 		image = document.getElementById('details_image')
 		image.src=res.data.results[0].img
 		run_time = document.getElementById('run_time')
 		run_time.innerHTML = res.data.results[0].imdbruntime
+		title_imdb = document.getElementById('single_title')
+		title_imdb.innerHTML = `${res.data.results[0].title} <span>${res.data.results[0].year}</span>`
+		imdb_rating = document.getElementById('imdb_single')
+		imdb_rating.innerHTML = res.data.results[0].imdbrating
 	}));
 };
 
