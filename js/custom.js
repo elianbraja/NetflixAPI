@@ -23,7 +23,7 @@ $(window).on('load', function() { // makes sure the whole site is loaded
 
 function fetchData (page, query){
 	if(query){
-		url = `https://unogsng.p.rapidapi.com/search?limit=30&offset=${counter*30}&query=${query}`
+		url = `https://unogsng.p.rapidapi.com/search?limit=30&offset=0&query=${query}`
 	}
 	else{
 		url = `https://unogsng.p.rapidapi.com/search?limit=30&offset=${counter*30}&orderby=rating`
