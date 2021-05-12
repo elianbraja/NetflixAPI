@@ -52,7 +52,7 @@ function fetchData (page, query){
 				</div>
 				<div class="mv-item-infor">
 					<h6><a href="#">${element.title}</a></h6>
-					<p class="rate"><i class="ion-android-star"></i><span>${element.imdbrating}</span> /10</p>
+					<p class="rate"><span style="color:#F3CE13">IMDb </span><span>${element.imdbrating}</span> /10</p>
 				</div>
 			</div>`
 		});
